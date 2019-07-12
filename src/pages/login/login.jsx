@@ -1,8 +1,9 @@
 import React, {Component} from 'react'
-import {Form, Icon, Input, Button} from 'antd';
+import {Form, Icon, Input, Button, message} from 'antd';
 
 import './login.less'
 import logo from './images/logo.png'
+import {reqLogin} from '../../api'
 
 /*
 登录的路由组件
@@ -20,9 +21,41 @@ class Login extends Component {
     //console.log('handleSubmit', values)
 
     //对所有的表单字段验证
-    this.props.form.validateFields((err, values) => {
+    this.props.form.validateFields(async (err, values) => {
       if (!err) {
-        console.log('验证成功，提交请求: ', values);
+
+        //console.log('Form表单验证成功，准备提交ajax请求: ', values);
+        const {username, password} = values
+
+        /*
+        //使用promise
+        reqLogin(username, password, '管理员').then(res => {
+          console.log('promise 成功了', res.data)
+        }).catch(e => {
+          console.log('promise 出错了', e)
+        })
+        */
+
+        //使用async await
+        /*
+        //自己处理异常
+        try{
+           const response = await reqLogin(username, password, '管理员')
+           console.log('async await 成功了', response.data)
+         }catch (e) {
+           console.log('async await 出错了', e)
+         }
+         */
+        //ajax统一处理了异常信息之后
+        const result = await reqLogin(username, password, '管理员')
+        //console.log('async await 成功了', response.data)
+        if (result.status === 0) {
+          message.success(result.msg)
+          //跳转到管理界面 push()可回退，replace()不可回退
+          this.props.history.replace('/')
+        } else {
+          message.error(result.msg)
+        }
       }
     });
 
@@ -69,7 +102,7 @@ class Login extends Component {
                       {max: 12, message: '用户名最多12位!'},
                       {pattern: /^[a-zA-Z0-9]+$/, message: '用户名必须为字母数字下划线组成!'},
                     ],
-                    initialValue:'admin'
+                    initialValue: 'admin'
                   })(
                     <Input
                       prefix={<Icon type="user" style={{color: 'rgba(0,0,0,.25)'}}/>}
@@ -83,7 +116,7 @@ class Login extends Component {
                   getFieldDecorator('password', {
                     rules: [
                       {validator: this.validatorPwd}
-                    ],initialValue:'admin'
+                    ], initialValue: 'admin'
                   })(
                     <Input
                       prefix={<Icon type="lock" style={{color: 'rgba(0,0,0,.25)'}}/>}
@@ -120,3 +153,15 @@ class Login extends Component {
 // 新组件会向Form组件传递一个对象属性form
 const WarpLogin = Form.create()(Login)
 export default WarpLogin
+
+/*
+async 和 await
+1.作用
+  简化promise对象的使用：不用再使用.then()来指定成功或失败的回调函数
+  以同步编码方式（没有回调函数了）实现异步流程
+2.哪里写await
+  在返回promise的表达式的左边写await：不想要promise对象而想要promise异步执行成功的value数据
+  const response = await reqLogin(username, password, '管理员')
+3.哪里写async
+  await所在函数（最近的函数）定义的左侧
+ */

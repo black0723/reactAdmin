@@ -5,7 +5,7 @@
 
 import React, {Component} from 'react'
 //引入路由组件
-import {BrowserRouter,Route,Switch} from 'react-router-dom'
+import {BrowserRouter, Route, Switch} from 'react-router-dom'
 
 import Login from './pages/login/login'
 import Admin from './pages/admin/admin'
@@ -14,12 +14,12 @@ export default class App extends Component {
 
   render() {
     //必须要返回一个虚拟dom
-    return(
+    return (
       <BrowserRouter>
         {/*只匹配其中一个*/}
         <Switch>
-          <Route path='/login' component={Login}></Route>
-          <Route path='/' component={Admin}></Route>
+          <Route path='/admin/login' component={Login}></Route>
+          <Route path='/admin' component={Admin}></Route>
         </Switch>
       </BrowserRouter>
     )

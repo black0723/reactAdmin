@@ -1,9 +1,12 @@
 import React, {Component} from 'react'
 import {Form, Icon, Input, Button, message} from 'antd';
+import {Redirect} from 'react-router-dom'
 
 import './login.less'
-import logo from './images/logo.png'
+import logo from '../../assets/images/logo.png'
 import {reqLogin} from '../../api'
+import memoryUtils from '../../utils/memoryUtils'
+import storageUtils from '../../utils/storageUtils'
 
 /*
 登录的路由组件
@@ -50,9 +53,14 @@ class Login extends Component {
         const result = await reqLogin(username, password, '管理员')
         //console.log('async await 成功了', response.data)
         if (result.status === 0) {
+          //提示登录成功
           message.success(result.msg)
+          //保存登录信息到内存
+          memoryUtils.user = result.data
+          //保存登录信息到local中
+          storageUtils.saveUser(result.data)
           //跳转到管理界面 push()可回退，replace()不可回退
-          this.props.history.replace('/')
+          this.props.history.replace('/admin')
         } else {
           message.error(result.msg)
         }
@@ -77,6 +85,11 @@ class Login extends Component {
   }
 
   render() {
+    //如果用户已经登录，跳转到管理界面
+    const user = memoryUtils.user
+    if (user && user.id) {
+      return <Redirect to={'/admin'}/>
+    }
 
     //得到form对象
     const form = this.props.form
@@ -165,3 +178,9 @@ async 和 await
 3.哪里写async
   await所在函数（最近的函数）定义的左侧
  */
+
+/*
+1. 登陆后, 刷新后依然是已登陆状态 (维持登陆)
+2. 登陆后, 关闭浏览器后打开浏览器访问依然是已登陆状态 (自动登陆)
+3. 登陆后, 访问登陆路径自动跳转到管理界面
+*/

@@ -1,10 +1,20 @@
 import React, {Component} from 'react'
-import {Redirect} from 'react-router-dom'
+import {Redirect, Route, Switch} from 'react-router-dom'
 import {Layout} from 'antd';
 
 import memoryUtils from '../../utils/memoryUtils'
 import LeftNav from '../../components/left-nav'
 import Header from '../../components/header'
+
+/*引入路由组件*/
+import Home from '../home/home'
+import Category from '../category/category'
+import Product from '../product/product'
+import Role from '../role/role'
+import User from '../user/user'
+import Bar from '../charts/bar'
+import Line from '../charts/line'
+import Pie from '../charts/pie'
 
 const {Footer, Sider, Content} = Layout;
 
@@ -26,7 +36,20 @@ export default class Admin extends Component {
         </Sider>
         <Layout>
           <Header>Header</Header>
-          <Content style={{backgroundColor: '#fff'}}>Content</Content>
+          {/*路由组件在哪个组件里面映射，就看他在哪个组件里面显示(相当于这个地方被路由组件的内容给替换了)*/}
+          <Content style={{margin: 20, backgroundColor: '#fff'}}>
+            <Switch>
+              <Route path='/admin/home' component={Home}/>
+              <Route path='/admin/category' component={Category}/>
+              <Route path='/admin/product' component={Product}/>
+              <Route path='/admin/role' component={Role}/>
+              <Route path='/admin/user' component={User}/>
+              <Route path='/admin/charts/bar' component={Bar}/>
+              <Route path='/admin/charts/line' component={Line}/>
+              <Route path='/admin/charts/pie' component={Pie}/>
+              <Redirect to='/admin/home'/>
+            </Switch>
+          </Content>
           <Footer style={{textAlign: 'center', color: '#ccc'}}>推荐使用谷歌浏览器，可以获得更佳页面操作体验</Footer>
         </Layout>
       </Layout>

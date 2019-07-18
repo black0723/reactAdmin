@@ -37,7 +37,7 @@ export default class Admin extends Component {
         <Layout>
           <Header>Header</Header>
           {/*路由组件在哪个组件里面映射，就看他在哪个组件里面显示(相当于这个地方被路由组件的内容给替换了)*/}
-          <Content style={{margin: 20, backgroundColor: '#fff'}}>
+          <Content style={{margin: '20px 20px 0', backgroundColor: '#fff'}}>
             <Switch>
               <Route path='/admin/home' component={Home}/>
               <Route path='/admin/category' component={Category}/>

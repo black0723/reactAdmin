@@ -3,6 +3,8 @@ import {Card, Table, Button, Icon, message, Modal} from 'antd'
 
 import LinkButton from '../../components/link-button'
 import {reqAddCategory, reqUpdateCategory, reqGetCategory} from '../../api/index'
+import AddForm from './add-form'
+import UpdateForm from './update-form'
 
 export default class Category extends Component {
 
@@ -164,7 +166,7 @@ export default class Category extends Component {
   /**
    * 去修改分类，弹出对话框
    */
-  toUpdateCategory =(category) =>{
+  toUpdateCategory = (category) => {
     this.setState({
       showStatus: 2
     })
@@ -255,9 +257,7 @@ export default class Category extends Component {
           onOk={this.addCategory}
           onCancel={this.handleCancel}
         >
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-          <p>Some contents...</p>
+          <AddForm/>
         </Modal>
 
         <Modal
@@ -266,9 +266,7 @@ export default class Category extends Component {
           onOk={this.updateCategory}
           onCancel={this.handleCancel}
         >
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-          <p>Some contents...</p>
+          <UpdateForm/>
         </Modal>
 
       </Card>

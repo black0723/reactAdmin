@@ -167,6 +167,10 @@ export default class Category extends Component {
    * 去修改分类，弹出对话框
    */
   toUpdateCategory = (category) => {
+    //保存原来的category
+    this.category = category
+
+    //更新分类
     this.setState({
       showStatus: 2
     })
@@ -175,21 +179,89 @@ export default class Category extends Component {
   /**
    * 保存添加分类
    */
-  addCategory = () => {
+  addCategory = async () => {
+//1.发请求更新数据,(a.收集数据{id, categoryName})
+    //a.准备数据
+    /*
+        1.categoryName是用户输入的，应该从form对象里取，
+        2.但是form对象在子组件UpdateForm组件里（这里就涉及到子组件向父组件传值）
+        解决：通过props
+          //a.父组件：接收setForm函数参数把子组件的form传递过来
+          setForm = {
+              (form)=>{ this.form = form }
+          }
+          //b.子组件：通过setForm函数传递参数把子组件的form传递过来
+          componentWillMount () {
+            //将form对象通过setForm函数传递给父组件
+            this.props.setForm(this.props.form)
+          }
+     */
+    //从this.form对象中取出categoryName的表单值
+    const parentId = this.form.getFieldValue('parentId')
+    const categoryName = this.form.getFieldValue('categoryName')
+    //这里参数是单个传递进去的
+    const result = await reqAddCategory(parentId, categoryName)
+    if (result.status === 0) {
+      message.success('保存成功！')
+      //2.清除数据，关闭窗口
+      this.form.resetFields()
+      this.setState({
+        showStatus: 0
+      })
 
+      //3.重新显示列表
+      this.getCategories()
+    } else {
+      message.error('添加分类失败！')
+    }
   }
 
   /**
    * 修改分类
    */
-  updateCategory = () => {
+  updateCategory = async () => {
+    //1.发请求更新数据,(a.收集数据{id, categoryName})
+    //a.准备数据
+    const id = this.category.id
+    /*
+        1.categoryName是用户输入的，应该从form对象里取，
+        2.但是form对象在子组件UpdateForm组件里（这里就涉及到子组件向父组件传值）
+        解决：通过props
+          //a.父组件：接收setForm函数参数把子组件的form传递过来
+          setForm = {
+              (form)=>{ this.form = form }
+          }
+          //b.子组件：通过setForm函数传递参数把子组件的form传递过来
+          componentWillMount () {
+            //将form对象通过setForm函数传递给父组件
+            this.props.setForm(this.props.form)
+          }
+     */
+    //从this.form对象中取出categoryName的表单值
+    const categoryName = this.form.getFieldValue('categoryName')
+    //这里参数是传递的对象
+    const result = await reqUpdateCategory({id, categoryName})
+    if (result.status === 0) {
+      message.success('保存成功！')
+      //2.清除数据，关闭窗口
+      this.form.resetFields()
+      this.setState({
+        showStatus: 0
+      })
 
+      //3.重新显示列表
+      this.getCategories()
+    } else {
+      message.error('修改分类失败！')
+    }
   }
 
   /**
    * 点击取消，隐藏对话框
    */
   handleCancel = () => {
+    //2.清除数据，关闭窗口
+    this.form.resetFields()
     this.setState({
       showStatus: 0
     })
@@ -217,6 +289,9 @@ export default class Category extends Component {
 
     //读取状态数据
     const {categories, subCategories, parentId, parentName, loading, showStatus} = this.state
+    //读取原来的分类
+    const category = this.category
+
     const cardTitle = parentId === 0 ? '一级分类列表' : (
       <span>
         <LinkButton onClick={this.showCategories}>一级分类列表</LinkButton>
@@ -257,7 +332,16 @@ export default class Category extends Component {
           onOk={this.addCategory}
           onCancel={this.handleCancel}
         >
-          <AddForm/>
+          <AddForm
+            categories={categories}
+            parentId={parentId}
+            setForm={
+              (form) => {
+                this.form = form
+                /*把form存起来*/
+              }
+            }
+          />
         </Modal>
 
         <Modal
@@ -266,7 +350,16 @@ export default class Category extends Component {
           onOk={this.updateCategory}
           onCancel={this.handleCancel}
         >
-          <UpdateForm/>
+          {/*传递参数*/}
+          <UpdateForm
+            category={category}
+            setForm={
+              (form) => {
+                this.form = form
+                /*把form存起来*/
+              }
+            }
+          />
         </Modal>
 
       </Card>

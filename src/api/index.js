@@ -57,8 +57,8 @@ export const reqWeather = (city) => {
  * 分类接口
  */
 //添加分类
-export const reqAddCategory = (categoryName, parentId) => ajax(ADMIN_URL_PREFIX + '/category/add', {
-  categoryName, parentId
+export const reqAddCategory = (parentId, categoryName) => ajax(ADMIN_URL_PREFIX + '/category/add', {
+  parentId, categoryName
 }, 'POST')
 
 //修改分类

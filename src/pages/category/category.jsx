@@ -66,13 +66,14 @@ export default class Category extends Component {
    * 获取一级/二级分类数据
    * @returns {Promise<void>}
    */
-  getCategories = async () => {
+  getCategories = async (parentId) => {
     //在发送请求之前显示loading
     this.setState({
       loading: true
     })
 
-    const {parentId} = this.state
+    //parentId传值了就按parentId，不传就从状态中取
+    parentId = parentId || this.state.parentId
     const result = await reqGetCategory(parentId)
 
     //在请求结束后隐藏loading
@@ -179,81 +180,100 @@ export default class Category extends Component {
   /**
    * 保存添加分类
    */
-  addCategory = async () => {
-//1.发请求更新数据,(a.收集数据{id, categoryName})
-    //a.准备数据
-    /*
-        1.categoryName是用户输入的，应该从form对象里取，
-        2.但是form对象在子组件UpdateForm组件里（这里就涉及到子组件向父组件传值）
-        解决：通过props
-          //a.父组件：接收setForm函数参数把子组件的form传递过来
-          setForm = {
-              (form)=>{ this.form = form }
-          }
-          //b.子组件：通过setForm函数传递参数把子组件的form传递过来
-          componentWillMount () {
-            //将form对象通过setForm函数传递给父组件
-            this.props.setForm(this.props.form)
-          }
-     */
-    //从this.form对象中取出categoryName的表单值
-    const parentId = this.form.getFieldValue('parentId')
-    const categoryName = this.form.getFieldValue('categoryName')
-    //这里参数是单个传递进去的
-    const result = await reqAddCategory(parentId, categoryName)
-    if (result.status === 0) {
-      message.success('保存成功！')
-      //2.清除数据，关闭窗口
-      this.form.resetFields()
-      this.setState({
-        showStatus: 0
-      })
+  addCategory = () => {
+    //先验证表单
+    this.form.validateFields(async (err, values) => {
+      if (!err) {
+        //1.发请求更新数据,(a.收集数据{id, categoryName})
+        //a.准备数据
+        /*
+            1.categoryName是用户输入的，应该从form对象里取，
+            2.但是form对象在子组件UpdateForm组件里（这里就涉及到子组件向父组件传值）
+            解决：通过props
+              //a.父组件：接收setForm函数参数把子组件的form传递过来
+              setForm = {
+                  (form)=>{ this.form = form }
+              }
+              //b.子组件：通过setForm函数传递参数把子组件的form传递过来
+              componentWillMount () {
+                //将form对象通过setForm函数传递给父组件
+                this.props.setForm(this.props.form)
+              }
+         */
+        //从this.form对象中取出categoryName的表单值
+        //const parentId = this.form.getFieldValue('parentId')
+        //const categoryName = this.form.getFieldValue('categoryName')
+        const {parentId, categoryName} = values
+        //这里参数是单个传递进去的
+        const result = await reqAddCategory(parentId, categoryName)
+        if (result.status === 0) {
+          message.success('保存成功！')
+          //2.清除数据，关闭窗口
+          this.form.resetFields()
+          this.setState({
+            showStatus: 0
+          })
 
-      //3.重新显示列表
-      this.getCategories()
-    } else {
-      message.error('添加分类失败！')
-    }
+          //添加的分类就是当前分类列表下的分类
+          if (parentId === this.state.parentId) {
+            //3.重新显示列表
+            this.getCategories()
+          } else if (parentId === 0) {
+            //在二级分类下，添加一级分类，
+            this.getCategories(parentId)
+          }
+        } else {
+          message.error('添加分类失败！')
+        }
+      }
+    })
   }
 
   /**
    * 修改分类
    */
-  updateCategory = async () => {
-    //1.发请求更新数据,(a.收集数据{id, categoryName})
-    //a.准备数据
-    const id = this.category.id
-    /*
-        1.categoryName是用户输入的，应该从form对象里取，
-        2.但是form对象在子组件UpdateForm组件里（这里就涉及到子组件向父组件传值）
-        解决：通过props
-          //a.父组件：接收setForm函数参数把子组件的form传递过来
-          setForm = {
-              (form)=>{ this.form = form }
-          }
-          //b.子组件：通过setForm函数传递参数把子组件的form传递过来
-          componentWillMount () {
-            //将form对象通过setForm函数传递给父组件
-            this.props.setForm(this.props.form)
-          }
-     */
-    //从this.form对象中取出categoryName的表单值
-    const categoryName = this.form.getFieldValue('categoryName')
-    //这里参数是传递的对象
-    const result = await reqUpdateCategory({id, categoryName})
-    if (result.status === 0) {
-      message.success('保存成功！')
-      //2.清除数据，关闭窗口
-      this.form.resetFields()
-      this.setState({
-        showStatus: 0
-      })
+  updateCategory = () => {
+    //先进行表单验证
+    this.form.validateFields(async (err, values) => {
+      if (!err) {
+        //1.发请求更新数据,(a.收集数据{id, categoryName})
+        //a.准备数据
+        const id = this.category.id
+        /*
+            1.categoryName是用户输入的，应该从form对象里取，
+            2.但是form对象在子组件UpdateForm组件里（这里就涉及到子组件向父组件传值）
+            解决：通过props
+              //a.父组件：接收setForm函数参数把子组件的form传递过来
+              setForm = {
+                  (form)=>{ this.form = form }
+              }
+              //b.子组件：通过setForm函数传递参数把子组件的form传递过来
+              componentWillMount () {
+                //将form对象通过setForm函数传递给父组件
+                this.props.setForm(this.props.form)
+              }
+         */
+        //从this.form对象中取出categoryName的表单值
+        //const categoryName = this.form.getFieldValue('categoryName')
+        const {categoryName} = values
+        //这里参数是传递的对象
+        const result = await
+          reqUpdateCategory({id, categoryName})
+        if (result.status === 0) {
+          message.success('保存成功！')
+          //2.清除数据，关闭窗口
+          this.form.resetFields()
+          this.setState({
+            showStatus: 0
+          })
 
-      //3.重新显示列表
-      this.getCategories()
-    } else {
-      message.error('修改分类失败！')
-    }
+          //3.重新显示列表
+          this.getCategories()
+        } else {
+          message.error('修改分类失败！')
+        }
+      }
+    })
   }
 
   /**

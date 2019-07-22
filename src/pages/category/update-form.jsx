@@ -14,7 +14,7 @@ class UpdateForm extends Component {
     setForm: PropTypes.func.isRequired
   }
 
-  componentWillMount () {
+  componentWillMount() {
     //将form对象通过setForm函数传递给父组件
     this.props.setForm(this.props.form)
   }
@@ -32,7 +32,10 @@ class UpdateForm extends Component {
           {
             getFieldDecorator('categoryName', {
               //初始值指定为传过来的值
-              initialValue: category.categoryName
+              initialValue: category.categoryName,
+              rules: [
+                {required: true, message: '分类名称不能为空！'}
+              ]
             })(
               <Input placeholder={'请输入分类名称'}/>
             )

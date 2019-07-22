@@ -45,7 +45,11 @@ class AddForm extends Component {
         </Item>
         <Item>
           {
-            getFieldDecorator('categoryName', {})(
+            getFieldDecorator('categoryName', {
+              rules: [
+                {required: true, message: '分类名称不能为空！'}
+              ]
+            })(
               <Input placeholder={'请输入分类名称'}/>
             )
           }

@@ -4,6 +4,7 @@
 import {message} from 'antd'
 import jsonp from 'jsonp'
 import ajax from './ajax'
+import Admin from "../pages/admin/admin";
 
 //后台URL前缀
 const ADMIN_URL_PREFIX = '/admin'
@@ -67,7 +68,14 @@ export const reqUpdateCategory = ({id, categoryName}) => ajax(ADMIN_URL_PREFIX +
 }, 'POST')
 
 //获取分类列表
-export const reqGetCategory = (parentId) => ajax(ADMIN_URL_PREFIX + '/category/getData', {parentId})
+export const reqGetCategory = (parentId) => ajax(ADMIN_URL_PREFIX + '/category/list', {parentId})
+
+/**
+ * 获取商品列表
+ * @param pageIndxe
+ * @param pageSize
+ */
+export const reqProduct = (pageIndex, pageSize) => ajax(ADMIN_URL_PREFIX + '/product/list', {pageIndex, pageSize})
 
 /**
  * 用户接口

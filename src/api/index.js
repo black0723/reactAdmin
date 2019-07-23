@@ -83,6 +83,12 @@ export const reqProduct = (pageIndex, pageSize, title, intro) => ajax(ADMIN_URL_
 })
 
 /**
+ * 获取商品详情
+ * @param id
+ */
+export const reqProductDetail = (id) => ajax(ADMIN_URL_PREFIX + `/product/detail/${id}`)
+
+/**
  * 用户接口
  */
 

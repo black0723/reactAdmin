@@ -75,7 +75,12 @@ export const reqGetCategory = (parentId) => ajax(ADMIN_URL_PREFIX + '/category/l
  * @param pageIndxe
  * @param pageSize
  */
-export const reqProduct = (pageIndex, pageSize) => ajax(ADMIN_URL_PREFIX + '/product/list', {pageIndex, pageSize})
+export const reqProduct = (pageIndex, pageSize, title, intro) => ajax(ADMIN_URL_PREFIX + '/product/list', {
+  pageIndex,
+  pageSize,
+  title,
+  intro
+})
 
 /**
  * 用户接口

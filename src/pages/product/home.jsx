@@ -11,6 +11,8 @@ export default class ProductHome extends Component {
     loading: false,
     total: 0, //总记录数
     products: [], //商品数组
+    searchType: 'title', //检索方式，默认是名称
+    searchValue: '',//检索词
 
   }
 
@@ -71,7 +73,10 @@ export default class ProductHome extends Component {
    */
   getProducts = async (pageIndex, pageSize) => {
     this.setState({loading: true})
-    const result = await reqProduct(pageIndex, pageSize);
+    const {searchType, searchValue} = this.state
+    const title = (searchType === 'title' ? searchValue : '')
+    const intro = (searchType === 'intro' ? searchValue : '')
+    const result = await reqProduct(pageIndex, pageSize, title, intro);
     this.setState({loading: false})
 
     if (result.status === 0) {
@@ -106,16 +111,25 @@ export default class ProductHome extends Component {
 
   render() {
 
-    const {products, total, loading} = this.state
+    const {products, total, loading, searchType, searchValue} = this.state
 
     const title = (
       <span>
-        <Select style={{width: 150}}>
-          <Select.Option value={'1'}>按名称搜索</Select.Option>
-          <Select.Option value={'2'}>按描述搜索</Select.Option>
+        <Select value={searchType} style={{width: 150}}
+                onChange={(value) => {
+                  this.setState({searchType: value})
+                }}
+        >
+          <Select.Option value={'title'}>按名称搜索</Select.Option>
+          <Select.Option value={'intro'}>按描述搜索</Select.Option>
         </Select>
-        <Input placeholder={'关键字'} style={{width: 150, margin: '0px 20px'}}/>
-        <Button type={'primary'}>检索</Button>
+        <Input placeholder={'关键字'} style={{width: 150, margin: '0px 20px'}}
+               value={searchValue}
+               onChange={(event) => {
+                 this.setState({searchValue: event.target.value})
+               }}
+        />
+        <Button type={'primary'} onClick={() => this.getProducts(1)}>检索</Button>
       </span>
     )
 

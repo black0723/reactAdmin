@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {Card, Select, Input, Button, Icon, Table, message} from 'antd'
 
 import LinkButton from '../../components/link-button'
-import {reqProduct} from '../../api'
+import {reqProduct, reqUpdateProductStatus} from '../../api'
 import {PAGE_SIZE} from '../../utils/constant'
 
 export default class ProductHome extends Component {
@@ -43,12 +43,19 @@ export default class ProductHome extends Component {
       {
         width: 150,
         title: '状态',
-        dataIndex: 'status',
-        render: (status) => {
+        //dataIndex: 'status',
+        render: (row) => {
+          const {id, status} = row
           return (
             <span>
-              <span>在售</span>
-              <Button type={'primary'} style={{marginLeft: 8}}>下架</Button>
+              <Button
+                type={'primary'}
+                style={{marginRight: 8}}
+                onClick={() => this.updateStatus(id, status == 0 ? 1 : 0)}
+              >
+                {status == 0 ? "下架" : "上架"}
+              </Button>
+              <span>{status == 0 ? "在售" : "已下架"}</span>
             </span>
           )
         }
@@ -61,7 +68,7 @@ export default class ProductHome extends Component {
             <span>
               <LinkButton
                 /*将row对象使用state传递给目标路由组件*/
-                onClick={() => this.props.history.push('/admin/product/detail',row)}>详情</LinkButton>
+                onClick={() => this.props.history.push('/admin/product/detail', row)}>详情</LinkButton>
               <LinkButton>修改</LinkButton>
             </span>
           )
@@ -74,6 +81,7 @@ export default class ProductHome extends Component {
    * 获取商品列表
    */
   getProducts = async (pageIndex, pageSize) => {
+    this.pageIndex = pageIndex //保存当前页码
     this.setState({loading: true})
     const {searchType, searchValue} = this.state
     const title = (searchType === 'title' ? searchValue : '')
@@ -89,6 +97,20 @@ export default class ProductHome extends Component {
       })
     } else {
       message.error('获取列表数据失败！')
+    }
+  }
+
+  /**
+   * 商品上架，下架
+   * @param id
+   * @param status
+   */
+  updateStatus = async (id, status) => {
+    const result = await reqUpdateProductStatus(id, status)
+    if (result.status === 0) {
+      this.getProducts(this.pageIndex, PAGE_SIZE)
+    } else {
+      message.error(status == 0 ? "上架" : "下架" + "失败")
     }
   }
 
@@ -136,7 +158,10 @@ export default class ProductHome extends Component {
     )
 
     const extra = (
-      <Button type={'primary'}>
+      <Button
+        type={'primary'}
+        onClick={() => this.props.history.push('/admin/product/addupdate')}
+      >
         <Icon type={'plus'}></Icon>
         添加商品
       </Button>

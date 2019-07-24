@@ -77,7 +77,7 @@ export default class ProductDetail extends Component {
           </List.Item>
           <List.Item>
             <span className={'left'}>商品详情：</span>
-            <span dangerouslySetInnerHTML={{__html: product.intro}}></span>
+            <span dangerouslySetInnerHTML={{__html: product.remark}}></span>
           </List.Item>
         </List>
       </Card>

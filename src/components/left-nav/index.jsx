@@ -37,9 +37,14 @@ class LeftNav extends Component {
       } else {
         //得到当前请求的路由路径
         //非路由组件LeftNav没有路由组件的属性，必须经过withRouter包装才有
-        const path = this.props.location.pathname
+        let path = this.props.location.pathname
+        //针对/admin/product/detail特殊处理
+        if (path.indexOf('/admin/product') === 0) {
+          path = '/admin/product'
+        }
+
         //如果当前的路由和和菜单的子key匹配（则展开），将菜单的key保存为openKey
-        const cItem = item.children.find(o => o.key === path)
+        const cItem = item.children.find(o => path.indexOf(o.key) === 0)
         if (cItem) {
           this.openKey = item.key
         }
@@ -74,7 +79,7 @@ class LeftNav extends Component {
       if (item.children) {
 
         //如果当前的路由和和菜单的子key匹配（则展开），将菜单的key保存为openKey
-        const cItem = item.children.find(o => o.key === path)
+        const cItem = item.children.find(o => path.indexOf(o.key) === 0)
         if (cItem) {
           this.openKey = item.key
         }
@@ -125,7 +130,12 @@ class LeftNav extends Component {
 
     //得到当前请求的路由路径
     //非路由组件LeftNav没有路由组件的属性，必须经过withRouter包装才有
-    const path = this.props.location.pathname
+    let path = this.props.location.pathname
+    //针对/admin/product/detail特殊处理
+    if (path.indexOf('/admin/product') === 0) {
+      path = '/admin/product'
+    }
+
     //得到需要打开菜单项的key
     const openKey = this.openKey
 

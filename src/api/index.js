@@ -89,6 +89,12 @@ export const reqProduct = (pageIndex, pageSize, title, intro) => ajax(ADMIN_URL_
 export const reqProductDetail = (id) => ajax(ADMIN_URL_PREFIX + `/product/detail/${id}`)
 
 /**
+ * 更新商品状态，上架/下架
+ * @param id
+ * @param status
+ */
+export const reqUpdateProductStatus = (id, status) => ajax(ADMIN_URL_PREFIX + `/product/updateStatus`, {id, status})
+/**
  * 用户接口
  */
 

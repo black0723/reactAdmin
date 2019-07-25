@@ -22,6 +22,7 @@ export default class ProductHome extends Component {
   initColumns() {
     this.columns = [
       {
+        width: 150,
         title: '商品名称',
         dataIndex: 'title',
       },
@@ -37,8 +38,9 @@ export default class ProductHome extends Component {
         }
       },
       {
+        width: 150,
         title: '图片',
-        dataIndex: 'imagepath',
+        dataIndex: 'imagepaths',
       },
       {
         width: 150,
@@ -68,8 +70,13 @@ export default class ProductHome extends Component {
             <span>
               <LinkButton
                 /*将row对象使用state传递给目标路由组件*/
-                onClick={() => this.props.history.push('/admin/product/detail', row)}>详情</LinkButton>
-              <LinkButton>修改</LinkButton>
+                onClick={() => this.props.history.push('/admin/product/detail', row)}
+              >详情
+              </LinkButton>
+              <LinkButton
+                onClick={() => this.props.history.push('/admin/product/addupdate', row)}
+              >修改
+              </LinkButton>
             </span>
           )
         }

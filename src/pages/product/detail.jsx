@@ -63,7 +63,7 @@ export default class ProductDetail extends Component {
           </List.Item>
           <List.Item>
             <span className={'left'}>商品分类：</span>
-            <span>{product.categoryName}{product.categoryName2 ? "-->" + product.categoryName2 : ""}</span>
+            <span>{product.categoryName1}{product.categoryName2 ? " / " + product.categoryName2 : ""}</span>
           </List.Item>
           <List.Item>
             <span className={'left'}>商品图片：</span>

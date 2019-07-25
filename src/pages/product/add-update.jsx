@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import {Card, Form, Input, Cascader, Upload, Button, Icon} from 'antd'
 
+import PicturesWall from './pictures-wall'
 import LinkButton from '../../components/link-button'
 import {reqGetCategory} from '../../api'
 
@@ -20,7 +21,7 @@ class ProductAddUpdate extends Component {
     //进行表单验证，如果通过了才发请求提交表单
     this.props.form.validateFields((error, values) => {
       if (!error) {
-        console.log('values', values)
+        console.log('doSubmit() values', values)
         alert('验证通过，发送ajax请求提交表单')
       }
     })
@@ -41,6 +42,42 @@ class ProductAddUpdate extends Component {
   }
 
   /**
+   * 初始化生成级联的一级分类列表
+   */
+  initOptions = async (categorys) => {
+    //根据一级分类数组生成options结构的数组，把分类数据拼接成options格式的数组
+    const options = categorys.map(o => ({
+      value: o.id,
+      label: o.categoryName,
+      isLeaf: false,
+    }))
+
+    //如果当前是一个更新的状态，并且是获取二级分类
+    const {product, isUpdate} = this
+    if (isUpdate && product.parentCategoryId > 0) {
+      //异步获取product.parentCategoryId下的二级分类
+      const subCategorys = await this.getCategorys(product.parentCategoryId)
+      if (subCategorys && subCategorys.length > 0) {
+        //生成二级列表的options，并且关联到当前一级option上
+        const childOptions = subCategorys.map(o => (
+          {
+            value: o.id,
+            label: o.categoryName,
+            isLeaf: true
+          }
+        ))
+
+        //找出该一级分类的option
+        const targetOption = options.find(option => option.value === product.parentCategoryId)
+        //关联到当前一级option上
+        targetOption.children = childOptions
+      }
+    }
+    //更新状态
+    this.setState({options})
+  }
+
+  /**
    * 异步获取一级/二级分类
    * @param parentId
    * async函数的返回值是一个新的promise对象，promise的结果和值由async的结果来决定
@@ -51,14 +88,7 @@ class ProductAddUpdate extends Component {
       const categorys = result.data  //取出分类数据
       //如果是一级分类
       if (parentId === 0) {
-        //把分类数据拼接成options格式的数组
-        const options = categorys.map(o => ({
-          value: o.id,
-          label: o.categoryName,
-          isLeaf: false,
-        }))
-        //更新状态
-        this.setState({options})
+        this.initOptions(categorys)
       } else {
         //二级分类
         return categorys  //返回二级列表（当前async函数返回的promise成功，且value为categorys）
@@ -100,12 +130,38 @@ class ProductAddUpdate extends Component {
     this.setState({options: [...this.state.options]})
   }
 
+  componentWillMount() {
+    console.log('componentWillMount()')
+    //取出修改按钮跳转过来携带的state
+    const product = this.props.location.state
+    this.isUpdate = !!product //!!强制转换成布尔类型
+    this.product = product || {}
+  }
+
   componentDidMount() {
+    console.log('componentDidMount()')
     //上来就获取一级分类
     this.getCategorys(0)
   }
 
   render() {
+    console.log('render()')
+    //isUpdate是否是更新状态
+    const {isUpdate, product} = this
+    const {categoryId, parentCategoryId} = product
+    //用来接收级联分类id的数组
+    const categoryIds = []
+    if (isUpdate) {
+      //如果商品是一级分类的商品
+      if (parentCategoryId === 0) {
+        categoryIds.push(categoryId)
+      } else {
+        //如果商品是二级分类的商品
+        categoryIds.push(parentCategoryId)
+        categoryIds.push(categoryId)
+      }
+      //console.log('categoryIds', categoryIds)
+    }
 
     //指定Form/Item布局的配置对象
     const formItemLayout = {
@@ -122,7 +178,9 @@ class ProductAddUpdate extends Component {
             onClick={() => this.props.history.goBack()}
           />
         </LinkButton>
-        <span>添加商品</span>
+        <span>
+          {isUpdate ? "修改商品" : "添加商品"}
+        </span>
       </span>
     )
 
@@ -134,7 +192,7 @@ class ProductAddUpdate extends Component {
           <Item label={'商品名称'}>
             {
               getFieldDecorator('title', {
-                initialValue: '',
+                initialValue: product.title,
                 rules: [{required: true, message: '商品名称不能为空'}]
               })(<Input placeholder={'请输入商品名称'}/>)
             }
@@ -142,7 +200,7 @@ class ProductAddUpdate extends Component {
           <Item label={'商品描述'}>
             {
               getFieldDecorator('intro', {
-                initialValue: '',
+                initialValue: product.intro,
                 rules: [{required: true, message: '商品描述不能为空'}]
               })(<TextArea placeholder={'请输入商品描述'} autosize={{minRows: 2, maxRows: 6}}/>)
             }
@@ -150,7 +208,7 @@ class ProductAddUpdate extends Component {
           <Item label={'商品价格'}>
             {
               getFieldDecorator('price', {
-                initialValue: '',
+                initialValue: product.price,
                 rules: [
                   {required: true, message: '商品价格不能为空'},
                   {validator: this.validatePrice}
@@ -159,13 +217,23 @@ class ProductAddUpdate extends Component {
             }
           </Item>
           <Item label={'商品分类'}>
-            <Cascader
-              options={this.state.options}
-              loadData={this.loadData}
-            />
+            {
+              getFieldDecorator('categoryIds', {
+                initialValue: categoryIds,
+                rules: [
+                  {required: true, message: '请指定商品分类'},
+                ]
+              })(
+                <Cascader
+                  placeholder={'请指定商品分类'}
+                  options={this.state.options}
+                  loadData={this.loadData}
+                />
+              )
+            }
           </Item>
           <Item label={'商品图片'}>
-            <div>商品图片</div>
+            <PicturesWall/>
           </Item>
           <Item label={'商品详情'}>
             <div>商品详情</div>

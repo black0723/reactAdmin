@@ -2,11 +2,16 @@ import React, {Component} from 'react'
 import {Card, Form, Input, Cascader, Upload, Button, Icon} from 'antd'
 
 import LinkButton from '../../components/link-button'
+import {reqGetCategory} from '../../api'
 
 const {Item} = Form
 const {TextArea} = Input
 
 class ProductAddUpdate extends Component {
+
+  state = {
+    options: [], //Cascader分类的数据源
+  }
 
   /**
    * 提交表单
@@ -22,7 +27,7 @@ class ProductAddUpdate extends Component {
   }
 
   /**
-   * 验证价格是否合法
+   * 自定义验证价格是否合法
    * @param rule
    * @param value
    * @param callback
@@ -31,8 +36,73 @@ class ProductAddUpdate extends Component {
     if (value * 1 > 0) {
       callback()
     } else {
-      callback('价格必须大于0')
+      callback(' 价格必须大于0')
     }
+  }
+
+  /**
+   * 异步获取一级/二级分类
+   * @param parentId
+   * async函数的返回值是一个新的promise对象，promise的结果和值由async的结果来决定
+   */
+  getCategorys = async (parentId) => {
+    const result = await reqGetCategory(parentId)
+    if (result.status === 0) {
+      const categorys = result.data  //取出分类数据
+      //如果是一级分类
+      if (parentId === 0) {
+        //把分类数据拼接成options格式的数组
+        const options = categorys.map(o => ({
+          value: o.id,
+          label: o.categoryName,
+          isLeaf: false,
+        }))
+        //更新状态
+        this.setState({options})
+      } else {
+        //二级分类
+        return categorys  //返回二级列表（当前async函数返回的promise成功，且value为categorys）
+      }
+    }
+  }
+
+  /**
+   * 分类，异步获取二级分类
+   * @param selectedOptions
+   */
+  loadData = async selectedOptions => {
+    //当前选中的一级分类的option
+    const targetOption = selectedOptions[selectedOptions.length - 1]
+    targetOption.loading = true
+
+    //根据选中的分类，异步获取二级分类
+    const parentId = targetOption.value //当前选中的值就是二级分类的parentId
+    //因为this.getCategorys(parentId)返回的是一个promise对象，所以要加上await
+    const subCategorys = await this.getCategorys(parentId)
+    targetOption.loading = false
+
+    if (subCategorys && subCategorys.length > 0) {
+      //生成二级列表的options，并且关联到当前一级option上
+      const childOptions = subCategorys.map(o => (
+        {
+          value: o.id,
+          label: o.categoryName,
+          isLeaf: true
+        }
+      ))
+      //关联到当前一级option上
+      targetOption.children = childOptions
+    } else {
+      //没有二级分类
+      targetOption.isLeaf = true //是叶子节点
+    }
+    //更新状态
+    this.setState({options: [...this.state.options]})
+  }
+
+  componentDidMount() {
+    //上来就获取一级分类
+    this.getCategorys(0)
   }
 
   render() {
@@ -89,7 +159,10 @@ class ProductAddUpdate extends Component {
             }
           </Item>
           <Item label={'商品分类'}>
-            <div>商品分类</div>
+            <Cascader
+              options={this.state.options}
+              loadData={this.loadData}
+            />
           </Item>
           <Item label={'商品图片'}>
             <div>商品图片</div>

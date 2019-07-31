@@ -94,6 +94,13 @@ export const reqProductDetail = (id) => ajax(ADMIN_URL_PREFIX + `/product/detail
  * @param status
  */
 export const reqUpdateProductStatus = (id, status) => ajax(ADMIN_URL_PREFIX + `/product/updateStatus`, {id, status})
+
+/**
+ * 删除图片
+ * @param name
+ */
+export const reqDeleteImage = (name) => ajax('/file/delete', {name}, 'POST')
+
 /**
  * 用户接口
  */

@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import {Card, Form, Input, Cascader, Upload, Button, Icon} from 'antd'
 
 import PicturesWall from './pictures-wall'
+import RichTextEditor from './rich-text-editor'
 import LinkButton from '../../components/link-button'
 import {reqGetCategory} from '../../api'
 
@@ -14,6 +15,13 @@ class ProductAddUpdate extends Component {
     options: [], //Cascader分类的数据源
   }
 
+  constructor(props) {
+    super(props)
+    //在父组件的构造函数中创建用来保存ref标识的标签对象容器
+    this.pw = React.createRef()
+    this.editor = React.createRef()
+  }
+
   /**
    * 提交表单
    */
@@ -21,7 +29,14 @@ class ProductAddUpdate extends Component {
     //进行表单验证，如果通过了才发请求提交表单
     this.props.form.validateFields((error, values) => {
       if (!error) {
-        console.log('doSubmit() values', values)
+
+        //获取子组件里的函数，
+        // 1.返回上传的图片名称数组
+        const imgs = this.pw.current.getImgs()
+        //2.返回文本编辑器里的输入的内容
+        const content = this.editor.current.getContent()
+
+        console.log('doSubmit() values', values, 'imgs', imgs, 'content', content)
         alert('验证通过，发送ajax请求提交表单')
       }
     })
@@ -148,7 +163,8 @@ class ProductAddUpdate extends Component {
     console.log('render()')
     //isUpdate是否是更新状态
     const {isUpdate, product} = this
-    const {categoryId, parentCategoryId} = product
+    const {categoryId, parentCategoryId, imagepaths, remark} = product
+
     //用来接收级联分类id的数组
     const categoryIds = []
     if (isUpdate) {
@@ -166,7 +182,7 @@ class ProductAddUpdate extends Component {
     //指定Form/Item布局的配置对象
     const formItemLayout = {
       labelCol: {span: 2}, //左侧label的宽度
-      wrapperCol: {span: 8},
+      wrapperCol: {span: 9},
     }
 
     const title = (
@@ -233,10 +249,16 @@ class ProductAddUpdate extends Component {
             }
           </Item>
           <Item label={'商品图片'}>
-            <PicturesWall/>
+            <PicturesWall
+              ref={this.pw}
+              imagepaths={imagepaths ? JSON.parse(imagepaths) : []}/>
           </Item>
-          <Item label={'商品详情'}>
-            <div>商品详情</div>
+          <Item
+            label={'商品详情'}
+            labelCol={{span: 2}}
+            wrapperCol={{span: 20}}
+          >
+            <RichTextEditor ref={this.editor} content={remark}/>
           </Item>
           <Item>
             <Button type={'primary'} onClick={this.doSubmit}>提交</Button>

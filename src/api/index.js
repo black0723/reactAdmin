@@ -107,6 +107,17 @@ export const reqDeleteImage = (name) => ajax('/file/delete', {name}, 'POST')
 export const reqSaveProduct = (product) => ajax(ADMIN_URL_PREFIX + '/product/save', product, 'POST')
 
 /**
+ * 获取角色列表
+ */
+export const reqGetRoles = () => ajax(ADMIN_URL_PREFIX + '/role/list')
+
+/**
+ * 添加角色
+ * @param name
+ */
+export const reqAddRoles = (name) => ajax(ADMIN_URL_PREFIX + '/role/save', {name}, 'POST')
+
+/**
  * 用户接口
  */
 

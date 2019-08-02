@@ -32,7 +32,8 @@ export default class ProductDetail extends Component {
   render() {
 
     const {product} = this.state
-    product.images = ['1.jpg', '2.jpg']
+    //图片
+    product.images = (product.imagepaths ? JSON.parse(product.imagepaths) : ['default.jpg'])
 
     const title = (
       <span>

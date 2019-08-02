@@ -1,10 +1,10 @@
 import React, {Component} from 'react'
-import {Card, Form, Input, Cascader, Upload, Button, Icon} from 'antd'
+import {Card, Form, Input, Cascader, Button, Icon, message} from 'antd'
 
 import PicturesWall from './pictures-wall'
 import RichTextEditor from './rich-text-editor'
 import LinkButton from '../../components/link-button'
-import {reqGetCategory} from '../../api'
+import {reqGetCategory, reqSaveProduct} from '../../api'
 
 const {Item} = Form
 const {TextArea} = Input
@@ -27,17 +27,57 @@ class ProductAddUpdate extends Component {
    */
   doSubmit = () => {
     //进行表单验证，如果通过了才发请求提交表单
-    this.props.form.validateFields((error, values) => {
+    this.props.form.validateFields(async (error, values) => {
       if (!error) {
 
-        //获取子组件里的函数，
-        // 1.返回上传的图片名称数组
+        /**
+         * 1.收集数据
+         */
+          //获取子组件里的函数，
+          // 1.返回上传的图片名称数组
         const imgs = this.pw.current.getImgs()
+        values.imagepaths = JSON.stringify(imgs)
+
         //2.返回文本编辑器里的输入的内容
         const content = this.editor.current.getContent()
+        values.remark = content
 
-        console.log('doSubmit() values', values, 'imgs', imgs, 'content', content)
-        alert('验证通过，发送ajax请求提交表单')
+        //3.分类id
+        const {categoryIds} = values
+        let categoryId, parentCategoryId
+        if (categoryIds.length == 1) {
+          parentCategoryId = 0
+          categoryId = categoryIds[0]
+        }
+        if (categoryIds.length == 2) {
+          parentCategoryId = categoryIds[0]
+          categoryId = categoryIds[1]
+        }
+        values.categoryId = categoryId
+        values.parentCategoryId = parentCategoryId
+
+        //4.如果是更新操作
+        if (this.isUpdate) {
+          values.id = this.product.id
+        }
+
+        console.log('doSubmit() 验证通过，发送ajax请求提交表单 values=>', values, 'imgs', imgs, 'content', content)
+
+        /**
+         * 2.调接口
+         */
+
+        const result = await reqSaveProduct(values)
+
+        /**
+         * 3.根据响应结果提示
+         */
+        if (result.status === 0) {
+          message.success('保存成功！')
+          this.props.history.goBack()
+        } else {
+          message.error('保存失败！')
+        }
       }
     })
   }

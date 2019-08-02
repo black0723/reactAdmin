@@ -1,11 +1,13 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 
-import {EditorState, convertToRaw,ContentState} from 'draft-js';
+import {EditorState, convertToRaw, ContentState} from 'draft-js';
 import {Editor} from 'react-draft-wysiwyg';
 import draftToHtml from 'draftjs-to-html';
 import htmlToDraft from 'html-to-draftjs';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
+
+import {BASE_IMG_URL} from '../../utils/constant'
 
 /**
  * 富文本编辑器
@@ -28,15 +30,15 @@ export default class RichTextEditor extends Component {
   constructor(props) {
     super(props)
     const html = this.props.content
-    if(html){
+    if (html) {
       //
       const contentBlocks = htmlToDraft(html)
       const sampleEditorContent = ContentState.createFromBlockArray(contentBlocks)
       const editorState = EditorState.createWithContent(sampleEditorContent)
       this.state = {
-        editorState:editorState,
+        editorState: editorState,
       }
-    }else{
+    } else {
       this.state = {
         //创建一个没有内容的编辑对象
         editorState: EditorState.createEmpty(),
@@ -63,6 +65,33 @@ export default class RichTextEditor extends Component {
     })
   }
 
+  /**
+   * 上传图片回调
+   */
+  uploadImageCallBack = (file) => {
+    return new Promise(
+      (resolve, reject) => {
+        const xhr = new XMLHttpRequest()
+        //xhr.open('POST', 'https://api.imgur.com/3/image')
+        xhr.open('POST', '/file/upload')
+        //xhr.setRequestHeader('Authorization', 'Client-ID XXXXX')
+        const data = new FormData()
+        data.append('file', file)
+        xhr.send(data)
+        xhr.addEventListener('load', () => {
+          const response = JSON.parse(xhr.responseText)
+          console.log('response', response)
+          const {fileName, fileUrlSuffix} = response.data
+          resolve({data: {link: BASE_IMG_URL + fileName}})
+        })
+        xhr.addEventListener('error', () => {
+          const error = JSON.parse(xhr.responseText)
+          reject(error)
+        })
+      }
+    )
+  }
+
   render() {
     const {editorState} = this.state;
     return (
@@ -73,6 +102,9 @@ export default class RichTextEditor extends Component {
           wrapperClassName="demo-wrapper"
           editorClassName="demo-editor"
           onEditorStateChange={this.onEditorStateChange}
+          toolbar={{
+            image: {uploadCallback: this.uploadImageCallBack, alt: {present: true, mandatory: true}},
+          }}
         />
       </div>
     )

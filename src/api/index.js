@@ -4,7 +4,6 @@
 import {message} from 'antd'
 import jsonp from 'jsonp'
 import ajax from './ajax'
-import Admin from "../pages/admin/admin";
 
 //后台URL前缀
 const ADMIN_URL_PREFIX = '/admin'
@@ -100,6 +99,12 @@ export const reqUpdateProductStatus = (id, status) => ajax(ADMIN_URL_PREFIX + `/
  * @param name
  */
 export const reqDeleteImage = (name) => ajax('/file/delete', {name}, 'POST')
+
+/**
+ * 保存商品
+ * @param product
+ */
+export const reqSaveProduct = (product) => ajax(ADMIN_URL_PREFIX + '/product/save', product, 'POST')
 
 /**
  * 用户接口

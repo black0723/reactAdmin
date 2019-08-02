@@ -3,7 +3,7 @@ import {Card, Select, Input, Button, Icon, Table, message} from 'antd'
 
 import LinkButton from '../../components/link-button'
 import {reqProduct, reqUpdateProductStatus} from '../../api'
-import {PAGE_SIZE} from '../../utils/constant'
+import {BASE_IMG_URL, PAGE_SIZE} from '../../utils/constant'
 
 export default class ProductHome extends Component {
 
@@ -41,6 +41,12 @@ export default class ProductHome extends Component {
         width: 150,
         title: '图片',
         dataIndex: 'imagepaths',
+        render: (imagepaths) => {
+          let imgSrc = imagepaths ? JSON.parse(imagepaths)[0] : 'default.jpg'
+          return (
+            <img src={BASE_IMG_URL + imgSrc} alt="image" className={'product-img-small'}/>
+          )
+        }
       },
       {
         width: 150,

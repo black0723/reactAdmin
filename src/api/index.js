@@ -112,14 +112,23 @@ export const reqSaveProduct = (product) => ajax(ADMIN_URL_PREFIX + '/product/sav
 export const reqGetRoles = () => ajax(ADMIN_URL_PREFIX + '/role/list')
 
 /**
- * 添加角色
+ * 添加角色/修改角色/设置menus权限
  * @param name
  */
 export const reqAddRoles = (name) => ajax(ADMIN_URL_PREFIX + '/role/save', {name}, 'POST')
 
 /**
+ * 设置角色
+ * @param role
+ */
+export const reqSetRolesAuth = (role) => ajax(ADMIN_URL_PREFIX + '/role/save', role, 'POST')
+
+/**
  * 用户接口
  */
-
-//添加用户
 export const reqAddUser = (user) => ajax(ADMIN_URL_PREFIX + '/user/add', user, 'POST')
+
+/**
+ * 用户接口
+ */
+export const reqUsers = () => ajax(ADMIN_URL_PREFIX + '/user/list')

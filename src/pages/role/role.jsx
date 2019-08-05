@@ -1,9 +1,10 @@
 import React, {Component} from 'react'
 import {Card, Button, Table, Modal, message} from 'antd'
 
-import {reqGetRoles, reqAddRoles} from '../../api'
+import {reqGetRoles, reqAddRoles, reqSetRolesAuth} from '../../api'
 import AddForm from './add-form'
 import AuthForm from './auth-form'
+import MemoryUtils from '../../utils/memoryUtils'
 
 export default class Role extends Component {
 
@@ -12,6 +13,13 @@ export default class Role extends Component {
     selectedRole: {},//当前行选择的角色
     isShowAddForm: false, //是否显示添加角色的窗口
     isShowAuth: false, // 是否显示设置角色权限
+  }
+
+  constructor(props) {
+    super(props)
+
+    //1.创建容器，接收子组件的menus值
+    this.authMenus = React.createRef()
   }
 
   /**
@@ -44,8 +52,14 @@ export default class Role extends Component {
   getRoles = async () => {
     const result = await reqGetRoles()
     if (result.status === 0) {
+      const newRoles = result.data.reduce((prev, item) => {
+        item.menus = item.menus ? JSON.parse(item.menus) : []
+        prev.push(item)
+        return prev
+      }, [])
+
       this.setState({
-        roles: result.data
+        roles: newRoles
       })
     }
   }
@@ -94,8 +108,32 @@ export default class Role extends Component {
   /**
    * 设置角色权限
    */
-  saveSetRoleAuth = () => {
+  saveSetRoleAuth = async () => {
+    //当前tr选择的role
+    const role = this.state.selectedRole
+    //得到子组件当前checkbox选择的menus
+    const menus = this.authMenus.current.getMenus()
 
+    //更新role的menus
+    role.menus = JSON.stringify(menus && menus.length > 0 ? menus : [])
+    //指定授权人
+    role.authName = MemoryUtils.user.username
+    //console.log('authName', role)
+
+    //发送ajax请求
+    const result = await reqSetRolesAuth(role)
+    if (result.status === 0) {
+      message.success('操作成功！')
+      //方法1，更新列表，重新发请求
+      this.getRoles()
+      //方法2，更新列表，更新role，更新状态
+      this.setState({
+        roles: [...this.state.roles],
+        isShowAuth: false
+      })
+    } else {
+      message.error('操作失败！')
+    }
   }
 
   /**
@@ -191,7 +229,7 @@ export default class Role extends Component {
             this.setState({isShowAuth: false})
           }}
         >
-          <AuthForm role={selectedRole}/>
+          <AuthForm role={selectedRole} ref={this.authMenus}/>
         </Modal>
       </Card>
     )

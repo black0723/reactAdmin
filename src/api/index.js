@@ -126,9 +126,15 @@ export const reqSetRolesAuth = (role) => ajax(ADMIN_URL_PREFIX + '/role/save', r
 /**
  * 用户接口
  */
-export const reqAddUser = (user) => ajax(ADMIN_URL_PREFIX + '/user/add', user, 'POST')
+export const reqSaveUser = (user) => ajax(ADMIN_URL_PREFIX + '/user/save', user, 'POST')
 
 /**
  * 用户接口
  */
 export const reqUsers = () => ajax(ADMIN_URL_PREFIX + '/user/list')
+
+/**
+ * 删除用户
+ * @param userId
+ */
+export const reqDeleteUser = (userId) => ajax(ADMIN_URL_PREFIX + '/user/delete', {userId}, 'POST')

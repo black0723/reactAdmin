@@ -2,8 +2,8 @@ import React, {Component} from 'react'
 import {Card, Table, Button, Modal, message} from 'antd'
 
 import LinkButton from '../../components/link-button'
-import {reqUsers} from "../../api";
-
+import {reqUsers, reqDeleteUser, reqSaveUser} from "../../api";
+import UserForm from './user-form'
 
 export default class User extends Component {
 
@@ -41,16 +41,8 @@ export default class User extends Component {
         //每行都会渲染自己的render
         render: (row) => (
           <span>
-            <LinkButton onClick={
-              () => {
-                this.toUpdateCategory(row)
-              }
-            }>修改</LinkButton>
-            <LinkButton onClick={
-              () => {
-                this.toUpdateCategory(row)
-              }
-            }>删除</LinkButton>
+            <LinkButton onClick={() => this.toUpdateCategory(row)}>修改</LinkButton>
+            <LinkButton onClick={() => this.deleteUser(row)}>删除</LinkButton>
           </span>
         ),
       }
@@ -61,7 +53,17 @@ export default class User extends Component {
    * 添加、修改用户
    */
   saveUser = () => {
-
+    this.form.validateFields(async (error, values) => {
+      if (!error) {
+        this.form.resetFields()
+        const result = await reqSaveUser(values)
+        if (result.status === 0) {
+          message.success('操作成功！')
+          this.setState({isShowModel: false})
+          this.getUsers()
+        }
+      }
+    })
   }
 
   /**
@@ -76,6 +78,26 @@ export default class User extends Component {
     }
   }
 
+  /**
+   * 删除用户
+   * @param user
+   */
+  deleteUser = (user) => {
+    Modal.confirm({
+      title: `确定要删除${user.username}吗？`,
+      onOk: async () => {
+        const result = await reqDeleteUser(user.id)
+        if (result.status === 0) {
+          message.success('删除成功！')
+          this.getUsers()
+        }
+      },
+      onCancel() {
+
+      }
+    })
+  }
+
   componentWillMount() {
     this.columns = this.initColumns()
   }
@@ -87,7 +109,9 @@ export default class User extends Component {
   render() {
 
     const title = (
-      <Button type={'primary'}>创建用户</Button>
+      <Button
+        type={'primary'}
+        onClick={() => this.setState({isShowModel: true})}>创建用户</Button>
     )
 
     const {users, isShowModel} = this.state
@@ -112,6 +136,7 @@ export default class User extends Component {
           onOk={this.saveUser}
           onCancel={() => this.setState({isShowModel: false})}
         >
+          <UserForm setForm={o => this.form = o}/>
         </Modal>
       </Card>
     )

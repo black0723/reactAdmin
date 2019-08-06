@@ -6,7 +6,7 @@ import jsonp from 'jsonp'
 import ajax from './ajax'
 
 //后台URL前缀
-const ADMIN_URL_PREFIX = '/admin'
+const ADMIN_URL_PREFIX = '/api/admin'
 
 /**
  * 登录接口

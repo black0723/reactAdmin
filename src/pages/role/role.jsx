@@ -5,6 +5,7 @@ import {reqGetRoles, reqAddRoles, reqSetRolesAuth} from '../../api'
 import AddForm from './add-form'
 import AuthForm from './auth-form'
 import MemoryUtils from '../../utils/memoryUtils'
+import storageUtils from "../../utils/storageUtils";
 
 export default class Role extends Component {
 
@@ -123,14 +124,23 @@ export default class Role extends Component {
     //发送ajax请求
     const result = await reqSetRolesAuth(role)
     if (result.status === 0) {
-      message.success('操作成功！')
       //方法1，更新列表，重新发请求
       this.getRoles()
-      //方法2，更新列表，更新role，更新状态
-      this.setState({
-        roles: [...this.state.roles],
-        isShowAuth: false
-      })
+
+      //如果当前更新的是自己的权限，强制退出
+      if (role.id === MemoryUtils.user.roleId) {
+        message.success('当前用户角色已被修改，请重新登录！')
+        MemoryUtils.user = {}
+        storageUtils.removeUser()
+        this.props.history.replace('/admin/login')
+      } else {
+        message.success('操作成功！')
+        //方法2，更新列表，更新role，更新状态
+        this.setState({
+          roles: [...this.state.roles],
+          isShowAuth: false
+        })
+      }
     } else {
       message.error('操作失败！')
     }
@@ -199,7 +209,15 @@ export default class Role extends Component {
             showTotal: this.showTotal,
             //total:21
           }}
-          rowSelection={{type: 'radio', selectedRowKeys: [selectedRole.id]}}
+          rowSelection={{
+            type: 'radio',
+            selectedRowKeys: [selectedRole.id],
+            onSelect: (record) => {
+              this.setState({
+                selectedRole: record
+              })
+            }
+          }}
           onRow={this.onRow}
         />
 

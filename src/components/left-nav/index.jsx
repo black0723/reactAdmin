@@ -5,6 +5,7 @@ import {Menu, Icon} from 'antd';
 import './index.less'
 import logo from '../../assets/images/logo.png'
 import menuList from '../../config/menuConfig'
+import memoryUtils from "../../utils/memoryUtils";
 
 const {SubMenu} = Menu;
 
@@ -19,6 +20,21 @@ class LeftNav extends Component {
       collapsed: !this.state.collapsed
     })
   }*/
+
+  //判断当前登录用户是否有item权限
+  hasAuth = (item) => {
+    const key = item.key
+    let meuns = memoryUtils.user.menus
+    meuns = (meuns && typeof meuns === 'string' ? JSON.parse(meuns) : [])
+
+    if (meuns.indexOf(key) > -1) {
+      return true
+    } else if (item.children) {
+      //item的子item的权限
+      return !!item.children.find(o => meuns.indexOf(o.key) > -1)
+    }
+    return false
+  }
 
   //1.使用map+递归调用，根据menu的数据，生成对应的标签
   getMenuNodesMap = (menuList) => {
@@ -76,42 +92,47 @@ class LeftNav extends Component {
 
     //reduce(回调函数(prev上一次统计的结果,item当前项)，初始值)；回调函数遍历的值push到[]中
     return menuList.reduce((prev, item) => {
-      if (item.children) {
 
-        //如果当前的路由和和菜单的子key匹配（则展开），将菜单的key保存为openKey
-        const cItem = item.children.find(o => path.indexOf(o.key) === 0)
-        if (cItem) {
-          this.openKey = item.key
-        }
+      //如果当前用户有item对应的权限，则才需要显示对应的菜单项
+      if (this.hasAuth(item)) {
+        if (item.children) {
 
-        prev.push(
-          (
-            <SubMenu
-              key={item.key}
-              title={
-                <span>
+          //如果当前的路由和和菜单的子key匹配（则展开），将菜单的key保存为openKey
+          const cItem = item.children.find(o => path.indexOf(o.key) === 0)
+          if (cItem) {
+            this.openKey = item.key
+          }
+
+          prev.push(
+            (
+              <SubMenu
+                key={item.key}
+                title={
+                  <span>
                 <Icon type={item.icon}/>
                 <span>{item.title}</span>
               </span>
-              }
-            >
-              {/*使用递归调用来生成子路由*/}
-              {this.getMenuNodesReduce(item.children)}
-            </SubMenu>
+                }
+              >
+                {/*使用递归调用来生成子路由*/}
+                {this.getMenuNodesReduce(item.children)}
+              </SubMenu>
+            )
           )
-        )
-      } else {
-        prev.push(
-          (
-            <Menu.Item key={item.key}>
-              <Link to={item.key}>
-                <Icon type={item.icon}/>
-                <span>{item.title}</span>
-              </Link>
-            </Menu.Item>
+        } else {
+          prev.push(
+            (
+              <Menu.Item key={item.key}>
+                <Link to={item.key}>
+                  <Icon type={item.icon}/>
+                  <span>{item.title}</span>
+                </Link>
+              </Menu.Item>
+            )
           )
-        )
+        }
       }
+
       //返回累加的结果
       return prev
     }, [])

@@ -104,7 +104,7 @@ class Header extends Component {
     return (
       <div className={'header'}>
         <div className={'header-top'}>
-          <span>欢迎，{user.username}</span>
+          <span>欢迎，{user.username}（{user.usertype}）</span>
           {/*<a href="javascript:void(0)" onClick={this.logout}>退出</a>*/}
           <LinkButton onClick={this.logout}>退出</LinkButton>
         </div>

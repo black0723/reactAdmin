@@ -12,8 +12,8 @@ const ADMIN_URL_PREFIX = '/admin'
  * 登录接口
  */
 //登录,使用箭头函数 分别暴露引入时需要{}
-export const reqLogin = (username, password, usertype) => ajax(ADMIN_URL_PREFIX + '/login', {
-  username, password, usertype
+export const reqLogin = (username, password, roleId) => ajax(ADMIN_URL_PREFIX + '/login', {
+  username, password, roleId
 }, 'POST')
 
 //登录，使用普通函数

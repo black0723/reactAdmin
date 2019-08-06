@@ -13,7 +13,8 @@ class UserForm extends Component {
    * 接收到的值的类型检查
    */
   static propTypes = {
-    setForm: PropTypes.func.isRequired
+    setForm: PropTypes.func.isRequired, //表单
+    user: PropTypes.object //修改的user
   }
 
   state = {
@@ -46,6 +47,8 @@ class UserForm extends Component {
   render() {
     console.log('render()')
     const {roles} = this.state
+    const user = this.props.user || {}
+
     //export default Form.create()(AddForm)包装之后就会得到
     const {getFieldDecorator} = this.props.form;
 
@@ -60,7 +63,7 @@ class UserForm extends Component {
         <Item label={'用户名'}>
           {
             getFieldDecorator('username', {
-              initialValue: '',
+              initialValue: user.username,
               rules: [
                 {required: true, message: '用户名不能为空！'}
               ]
@@ -73,7 +76,7 @@ class UserForm extends Component {
         <Item label={'密码'}>
           {
             getFieldDecorator('password', {
-              initialValue: '',
+              initialValue: user.password,
               rules: [
                 {required: true, message: '密码不能为空！'}
               ]
@@ -86,7 +89,7 @@ class UserForm extends Component {
         <Item label={'手机号'}>
           {
             getFieldDecorator('phone', {
-              initialValue: '',
+              initialValue: user.phone,
               rules: [
                 {required: true, message: '手机号不能为空！'}
               ]
@@ -99,7 +102,7 @@ class UserForm extends Component {
         <Item label={'邮箱'}>
           {
             getFieldDecorator('email', {
-              initialValue: '',
+              initialValue: user.email,
               rules: [
                 {required: true, message: '邮箱不能为空！'}
               ]
@@ -112,7 +115,7 @@ class UserForm extends Component {
         <Item label={'角色'}>
           {
             getFieldDecorator('roleId', {
-              initialValue: '',
+              initialValue: user.roleId,
               rules: [
                 {required: true, message: '角色不能为空！'}
               ]

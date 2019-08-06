@@ -1,10 +1,10 @@
 import React, {Component} from 'react'
-import {Form, Icon, Input, Button, message} from 'antd';
+import {Form, Icon, Input, Button, Select, message} from 'antd';
 import {Redirect} from 'react-router-dom'
 
 import './login.less'
 import logo from '../../assets/images/logo.png'
-import {reqLogin} from '../../api'
+import {reqLogin, reqGetRoles} from '../../api'
 import memoryUtils from '../../utils/memoryUtils'
 import storageUtils from '../../utils/storageUtils'
 
@@ -12,6 +12,23 @@ import storageUtils from '../../utils/storageUtils'
 登录的路由组件
  */
 class Login extends Component {
+
+  state = {
+    roles: []
+  }
+
+  constructor(props) {
+    super(props)
+    console.log('constructor(props)')
+    this.getRoles()
+  }
+
+  getRoles = async () => {
+    const result = await reqGetRoles()
+    if (result.status === 0) {
+      this.setState({roles: result.data})
+    }
+  }
 
   //处理登录
   handleSubmit = (event) => {
@@ -28,7 +45,7 @@ class Login extends Component {
       if (!err) {
 
         //console.log('Form表单验证成功，准备提交ajax请求: ', values);
-        const {username, password} = values
+        const {username, password,roleId} = values
 
         /*
         //使用promise
@@ -50,7 +67,7 @@ class Login extends Component {
          }
          */
         //ajax统一处理了异常信息之后
-        const result = await reqLogin(username, password, '管理员')
+        const result = await reqLogin(username, password, roleId)
         //console.log('async await 成功了', response.data)
         if (result.status === 0) {
           //提示登录成功
@@ -60,7 +77,7 @@ class Login extends Component {
           //保存登录信息到local中
           storageUtils.saveUser(result.data)
           //跳转到管理界面 push()可回退，replace()不可回退
-          this.props.history.replace('/admin')
+          this.props.history.replace('/admin/home')
         } else {
           message.error(result.msg)
         }
@@ -93,7 +110,8 @@ class Login extends Component {
 
     //得到form对象
     const form = this.props.form
-    const {getFieldDecorator} = form;
+    const {getFieldDecorator} = form
+    const {roles} = this.state
 
     return (
       <div className='login'>
@@ -136,6 +154,20 @@ class Login extends Component {
                       type="password"
                       placeholder="密码"
                     />
+                  )
+                }
+              </Form.Item>
+              <Form.Item>
+                {
+                  getFieldDecorator('roleId', {
+                  })(
+                    <Select
+                      suffixIcon={<Icon type="usergroup-add" style={{color: 'rgba(0,0,0,.25)'}}/>}
+                      placeholder={'请选择角色'}>
+                      {
+                        roles.map(o => <Select.Option key={o.id} value={o.id}>{o.name}</Select.Option>)
+                      }
+                    </Select>
                   )
                 }
               </Form.Item>

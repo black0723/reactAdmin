@@ -44,7 +44,13 @@ export default class ProductHome extends Component {
         render: (imagepaths) => {
           let imgSrc = imagepaths ? JSON.parse(imagepaths)[0] : 'default.jpg'
           return (
-            <img src={BASE_IMG_URL + imgSrc} alt="image" className={'product-img-small'}/>
+            <img src={BASE_IMG_URL + imgSrc} alt="image"
+                 className={'product-img-small'}
+                 onError={(e) => {
+                   e.target.onerror = null;
+                   e.target.src = BASE_IMG_URL + 'default.jpg'
+                 }}
+            />
           )
         }
       },
@@ -183,6 +189,7 @@ export default class ProductHome extends Component {
     return (
       <Card title={title} extra={extra}>
         <Table
+          current={this.pageIndex}
           loading={loading}
           dataSource={products}
           columns={this.columns}

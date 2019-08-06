@@ -41,7 +41,7 @@ export default class User extends Component {
         //每行都会渲染自己的render
         render: (row) => (
           <span>
-            <LinkButton onClick={() => this.toUpdateCategory(row)}>修改</LinkButton>
+            <LinkButton onClick={() => this.toUpdateUser(row)}>修改</LinkButton>
             <LinkButton onClick={() => this.deleteUser(row)}>删除</LinkButton>
           </span>
         ),
@@ -56,6 +56,10 @@ export default class User extends Component {
     this.form.validateFields(async (error, values) => {
       if (!error) {
         this.form.resetFields()
+        //是否是修改
+        if (this.user) {
+          values.id = this.user.id
+        }
         const result = await reqSaveUser(values)
         if (result.status === 0) {
           message.success('操作成功！')
@@ -64,6 +68,15 @@ export default class User extends Component {
         }
       }
     })
+  }
+
+  /**
+   * 去修改
+   * @param user
+   */
+  toUpdateUser = (user) => {
+    this.setState({isShowModel: true})
+    this.user = user
   }
 
   /**
@@ -111,7 +124,10 @@ export default class User extends Component {
     const title = (
       <Button
         type={'primary'}
-        onClick={() => this.setState({isShowModel: true})}>创建用户</Button>
+        onClick={() => {
+          this.setState({isShowModel: true})
+          this.user = null
+        }}>创建用户</Button>
     )
 
     const {users, isShowModel} = this.state
@@ -131,12 +147,15 @@ export default class User extends Component {
         />
 
         <Modal
-          title="创建用户"
+          title={(this.user && this.user.id) ? '修改用户' : '创建用户'}
           visible={isShowModel}
           onOk={this.saveUser}
-          onCancel={() => this.setState({isShowModel: false})}
+          onCancel={() => {
+            this.form.resetFields()
+            this.setState({isShowModel: false})
+          }}
         >
-          <UserForm setForm={o => this.form = o}/>
+          <UserForm setForm={o => this.form = o} user={this.user}/>
         </Modal>
       </Card>
     )

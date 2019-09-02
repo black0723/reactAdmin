@@ -6,7 +6,7 @@ module.exports = override(
     {
       libraryName: 'antd',
       libraryDirectory: 'es',
-      style: true, //自动打包先关的样式
+      style: true, //自动打包相关的样式
     }
   ),
 

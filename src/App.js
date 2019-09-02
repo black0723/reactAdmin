@@ -9,6 +9,7 @@ import {BrowserRouter, Route, Switch} from 'react-router-dom'
 
 import Login from './pages/login/login'
 import Admin from './pages/admin/admin'
+import FrontHome from './pages/front/fronthome/front-home'
 
 export default class App extends Component {
 
@@ -22,7 +23,7 @@ export default class App extends Component {
 
           <Route path='/admin/home' component={Admin}></Route>
           <Route path='/admin' component={Admin}></Route>
-          <Route path='/' component={Admin}></Route>
+          <Route path='/' component={FrontHome}></Route>
         </Switch>
       </BrowserRouter>
     )

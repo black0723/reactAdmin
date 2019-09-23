@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
 import {Button, Card} from 'antd'
-import ReactEcharts from 'echarts-for-react'
 
 export default class Pie extends Component {
 
@@ -125,12 +124,12 @@ export default class Pie extends Component {
   render() {
     return (
       <div>
-        <Card title='玫瑰花饼图一'>
+        {/*<Card title='玫瑰花饼图一'>
           <ReactEcharts option={this.getOption1()} style={{height: 500}}/>
         </Card>
         <Card title='一般饼图图二'>
           <ReactEcharts option={this.getOption2()} style={{height: 500}}/>
-        </Card>
+        </Card>*/}
       </div>
     )
   }

@@ -1,9 +1,9 @@
 import React, {Component} from 'react'
 import {Card, Select, Input, Button, Icon, Table, message} from 'antd'
 
-import LinkButton from '../../components/link-button'
-import {reqProduct, reqUpdateProductStatus} from '../../api'
-import {BASE_IMG_URL, PAGE_SIZE} from '../../utils/constant'
+import LinkButton from '../../../components/link-button/index'
+import {reqProduct, reqUpdateProductStatus} from '../../../api/index'
+import {BASE_IMG_URL, PAGE_SIZE} from '../../../utils/constant'
 
 export default class ProductHome extends Component {
 

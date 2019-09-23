@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
 import {Card, Table, Button, Modal, message} from 'antd'
 
-import LinkButton from '../../components/link-button'
-import {reqUsers, reqDeleteUser, reqSaveUser} from "../../api";
+import LinkButton from '../../../components/link-button/index'
+import {reqUsers, reqDeleteUser, reqSaveUser} from "../../../api/index";
 import UserForm from './user-form'
 
 export default class User extends Component {

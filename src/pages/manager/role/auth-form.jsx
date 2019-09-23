@@ -2,7 +2,7 @@ import React, {PureComponent} from 'react'
 import {Form, Input, Tree} from 'antd'
 import PropTypes from 'prop-types' //类型检查
 
-import menuConfig from '../../config/menuConfig'
+import menuConfig from '../../../config/menuConfig'
 
 const Item = Form.Item
 const {TreeNode} = Tree

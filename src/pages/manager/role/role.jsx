@@ -1,11 +1,11 @@
 import React, {Component} from 'react'
 import {Card, Button, Table, Modal, message} from 'antd'
 
-import {reqGetRoles, reqAddRoles, reqSetRolesAuth} from '../../api'
+import {reqGetRoles, reqAddRoles, reqSetRolesAuth} from '../../../api/index'
 import AddForm from './add-form'
 import AuthForm from './auth-form'
-import MemoryUtils from '../../utils/memoryUtils'
-import storageUtils from "../../utils/storageUtils";
+import MemoryUtils from '../../../utils/memoryUtils'
+import storageUtils from "../../../utils/storageUtils";
 
 export default class Role extends Component {
 

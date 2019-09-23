@@ -2,9 +2,9 @@ import React, {Component} from 'react'
 import {Redirect, Route, Switch} from 'react-router-dom'
 import {Layout} from 'antd';
 
-import memoryUtils from '../../utils/memoryUtils'
-import LeftNav from '../../components/left-nav'
-import Header from '../../components/header'
+import memoryUtils from '../../../utils/memoryUtils'
+import LeftNav from '../../../components/left-nav/index'
+import Header from '../../../components/header/index'
 
 /*引入路由组件*/
 import Home from '../home/home'
@@ -15,7 +15,7 @@ import User from '../user/user'
 import Bar from '../charts/bar'
 import Line from '../charts/line'
 import Pie from '../charts/pie'
-import NotFound from '../not-found/not-found'
+import NotFound from '../../not-found/not-found'
 
 const {Footer, Sider, Content} = Layout;
 

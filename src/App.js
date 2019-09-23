@@ -7,8 +7,7 @@ import React, {Component} from 'react'
 //引入路由组件
 import {BrowserRouter, Route, Switch} from 'react-router-dom'
 
-import Login from './pages/login/login'
-import Admin from './pages/admin/admin'
+import Admin from './pages/manager/admin/admin'
 import FrontHome from './pages/front/fronthome/front-home'
 
 export default class App extends Component {
@@ -19,11 +18,9 @@ export default class App extends Component {
       <BrowserRouter>
         {/*路由组件在哪个组件里面映射，就看他在哪个组件里面显示(相当于这个地方被路由组件的内容给替换了),只匹配其中一个*/}
         <Switch>
-          <Route path='/admin/login' component={Login}></Route>
-
-          <Route path='/admin/home' component={Admin}></Route>
           <Route path='/admin' component={Admin}></Route>
           <Route path='/' component={FrontHome}></Route>
+          <Route component={FrontHome}/>
         </Switch>
       </BrowserRouter>
     )

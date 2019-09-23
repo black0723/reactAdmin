@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {Form, Input, Select} from 'antd'
 import PropTypes from 'prop-types' //类型检查
 
-import {reqGetRoles} from '../../api'
+import {reqGetRoles} from '../../../api/index'
 
 const Item = Form.Item
 const Option = Select.Option

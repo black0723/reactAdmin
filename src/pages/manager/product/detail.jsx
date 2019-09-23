@@ -1,9 +1,9 @@
 import React, {Component} from 'react'
 import {Card, Icon, List, message} from 'antd'
 
-import LinkButton2 from '../../components/link-button'
-import {BASE_IMG_URL} from '../../utils/constant'
-import {reqProductDetail} from '../../api'
+import LinkButton2 from '../../../components/link-button/index'
+import {BASE_IMG_URL} from '../../../utils/constant'
+import {reqProductDetail} from '../../../api/index'
 
 export default class ProductDetail extends Component {
 

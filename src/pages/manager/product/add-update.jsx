@@ -3,8 +3,8 @@ import {Card, Form, Input, Cascader, Button, Icon, message} from 'antd'
 
 import PicturesWall from './pictures-wall'
 import RichTextEditor from './rich-text-editor'
-import LinkButton from '../../components/link-button'
-import {reqGetCategory, reqSaveProduct} from '../../api'
+import LinkButton from '../../../components/link-button/index'
+import {reqGetCategory, reqSaveProduct} from '../../../api/index'
 
 const {Item} = Form
 const {TextArea} = Input
